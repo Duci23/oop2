@@ -1,13 +1,22 @@
 package me.fit.model;
 
+import jakarta.persistence.*;
 import java.util.List;
 
+@Entity
 public class Department {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
 
+    @OneToMany(mappedBy = "department", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Instructor> instructors;
+
+    public Department() {
+    }
 
     public Long getId() {
         return id;

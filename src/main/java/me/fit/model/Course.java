@@ -1,11 +1,21 @@
 package me.fit.model;
 
+import jakarta.persistence.*;
+
+@Entity
 public class Course {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String title;
 
+    @ManyToOne
     private Instructor instructor;
+
+    public Course() {
+    }
 
     public Long getId() {
         return id;
