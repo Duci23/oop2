@@ -1,11 +1,13 @@
 package me.fit.resource;
 
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import me.fit.model.Student;
 import me.fit.service.StudentService;
+
 
 import java.util.List;
 
@@ -26,6 +28,7 @@ public class StudentResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/getAllStudents")
+    @RolesAllowed("admin")
     public Response getAllStudents() {
         List<Student> students = studentService.getAllStudents();
         return Response.ok().entity(students).build();
