@@ -2,6 +2,8 @@ package me.fit.model;
 
 import jakarta.persistence.*;
 import java.util.List;
+import java.util.*;
+import jakarta.persistence.*;
 
 @Entity
 public class Student {
@@ -63,4 +65,16 @@ public class Student {
     public void setInstructors(List<Instructor> instructors) {
         this.instructors = instructors;
     }
+
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
+    public List<TimezoneInfo> timezoneInfos = new ArrayList<>();
+
+    public List<TimezoneInfo> getTimezoneInfos() {
+        return timezoneInfos;
+    }
+
+    public void setTimezoneInfos(List<TimezoneInfo> timezoneInfos) {
+        this.timezoneInfos = timezoneInfos;
+    }
+
 }

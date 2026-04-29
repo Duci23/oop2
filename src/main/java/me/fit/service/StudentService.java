@@ -1,47 +1,41 @@
 package me.fit.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
+
 import me.fit.model.Student;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @ApplicationScoped
 public class StudentService {
 
-    private List<Student> students = new ArrayList<>();
-    private Long counter = 1L;
+    @Inject
+    EntityManager entityManager;
 
+    @Transactional
     public void createStudent(Student student) {
-        student.setId(counter++);
-        students.add(student);
+        entityManager.persist(student);
     }
 
     public List<Student> getAllStudents() {
-        return students;
+        return entityManager
+                .createQuery("from Student", Student.class)
+                .getResultList();
     }
 
-    // PRETRAGA PO ID
     public Student getStudentById(Long id) {
-        for (Student student : students) {
-            if (student.getId().equals(id)) {
-                return student;
-            }
-        }
-        return null;
+        return entityManager.find(Student.class, id);
     }
 
-    // PRETRAGA PO IMENU
     public List<Student> searchByName(String name) {
-        List<Student> result = new ArrayList<>();
-
-
-        for (Student student : students) {
-            if (student.getName().equalsIgnoreCase(name)) {
-                result.add(student);
-            }
-        }
-
-        return result;
+        return entityManager
+                .createQuery("from Student where lower(name)=lower(:name)", Student.class)
+                .setParameter("name", name)
+                .getResultList();
     }
+
+
 }

@@ -8,6 +8,14 @@ import jakarta.ws.rs.core.Response;
 import me.fit.model.Student;
 import me.fit.service.StudentService;
 
+import jakarta.transaction.Transactional;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
+
+import me.fit.client.IpClient;
+import me.fit.client.TimeClient;
+import me.fit.dto.TimeResponse;
+import me.fit.model.TimezoneInfo;
+import jakarta.persistence.EntityManager;
 
 import java.util.List;
 
@@ -16,6 +24,17 @@ public class StudentResource {
 
     @Inject
     private StudentService studentService;
+
+    @Inject
+    @RestClient
+    IpClient ipClient;
+
+    @Inject
+    @RestClient
+    TimeClient timeClient;
+
+    @Inject
+    EntityManager entityManager;
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -28,7 +47,8 @@ public class StudentResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/getAllStudents")
-    @RolesAllowed("admin")
+    //@RolesAllowed("admin")
+
     public Response getAllStudents() {
         List<Student> students = studentService.getAllStudents();
         return Response.ok().entity(students).build();
@@ -77,4 +97,39 @@ public class StudentResource {
 
         return Response.ok(student.getInstructors()).build();
     }
+
+
+    @GET
+    @Path("/getTimezoneByIP")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
+    public Response getTimezoneByIP(@QueryParam("userId") Long userId) {
+
+        Student student = studentService.getStudentById(userId);
+
+        if (student == null) {
+            return Response.status(404).entity("Student not found").build();
+        }
+
+        String ip = ipClient.getIp();
+
+        String response = timeClient.getTime(ip);
+
+        return Response.ok(response).build();
+    }
+
+    //
+    //  TimezoneInfo info = new TimezoneInfo();
+    //  info.setTimeZone(response.timeZone);
+    //  info.setDateTime(response.dateTime);
+    //info.setCountryName(response.countryName);
+    //  info.setCityName(response.cityName);
+    //  info.setStudent(student);
+
+    //  student.getTimezoneInfos().add(info);
+
+    //  return Response.ok(info).build();
+    //}
+
+
 }
